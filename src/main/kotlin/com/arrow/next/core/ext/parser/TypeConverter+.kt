@@ -2,6 +2,7 @@ package com.arrow.next.core.ext.parser
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -21,6 +22,22 @@ inline fun <reified T> toTypeOf(
             moshi.adapter<T>(rawType)
         }
     return adapter.fromJson(json)!!
+}
+
+inline fun <reified T> toType(
+    rawType: Class<*>,
+    typeArgument: Class<*>? = null,
+    json: String? = null
+): JsonAdapter<T> {
+    val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    val adapter =
+        if (typeArgument != null) {
+            val type = Types.newParameterizedType(rawType, typeArgument)
+            moshi.adapter<T>(type)
+        } else {
+            moshi.adapter<T>(rawType)
+        }
+    return adapter
 }
 
 /**
