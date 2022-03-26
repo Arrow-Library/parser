@@ -1,6 +1,7 @@
 package com.arrow.next.core.ext.parser
 
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -52,4 +53,11 @@ inline fun <reified T> JsonOf(
     clazz: T
 ): String {
     return Gson().toJson(clazz)
+}
+
+inline fun <reified T> toListOfType(
+    json: String
+): List<T> {
+    val typeToken = object : TypeToken<List<T>>() {}.type
+    return Gson().fromJson(json, typeToken)
 }
