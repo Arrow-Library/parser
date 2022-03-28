@@ -3,17 +3,21 @@ package com.arrow.next.core.ext.parser
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import org.koin.core.context.GlobalContext
+import org.koin.core.qualifier.named
 
+
+val gson = GlobalContext.get().get(named("bgson")) as Gson
+var moshi = GlobalContext.get().get(named("bmoshi")) as Moshi
 
 inline fun <reified T> toType(
     rawType: Class<*>,
     typeArgument: Class<*>? = null,
     json: String
 ): T {
-    val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    val moshi = moshi
     val adapter =
         if (typeArgument != null) {
             val type = Types.newParameterizedType(rawType, typeArgument)
@@ -29,7 +33,7 @@ inline fun <reified T> toTypeOf(
     typeArgument: Class<*>? = null,
     json: String? = null
 ): JsonAdapter<T> {
-    val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    val moshi = moshi
     val adapter =
         if (typeArgument != null) {
             val type = Types.newParameterizedType(rawType, typeArgument)
@@ -49,13 +53,13 @@ inline fun <reified T> toTypeOfForceMoshi(json: String): T? {
     val obj = reg.replace(json) { value ->
         value.value.lowercase()
     }
-    val moshi = Moshi.Builder().build()
+    val moshi = moshi
     val adapter = moshi.adapter(T::class.java)
     return adapter.fromJson(obj)
 }
 
 inline fun <reified T> toJson(obj: T): String {
-    val moshi = Moshi.Builder().build()
+    val moshi = moshi
     val adapter = moshi.adapter(T::class.java)
     return adapter.toJson(obj)
 }
@@ -64,17 +68,17 @@ inline fun <reified T> toJson(obj: T): String {
 inline fun <reified T > JsonTo(
     json: String
 ): T {
-    return Gson().fromJson(json, T::class.java)
+    return gson.fromJson(json, T::class.java)
 }
 inline fun <reified T> JsonOf(
     clazz: T
 ): String {
-    return Gson().toJson(clazz)
+    return gson.toJson(clazz)
 }
 
 inline fun <reified T> toListOfType(
     json: String
 ): List<T> {
     val typeToken = object : TypeToken<List<T>>() {}.type
-    return Gson().fromJson(json, typeToken)
+    return gson.fromJson(json, typeToken)
 }
