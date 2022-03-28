@@ -8,7 +8,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 
 
-inline fun <reified T> toTypeOf(
+inline fun <reified T> toType(
     rawType: Class<*>,
     typeArgument: Class<*>? = null,
     json: String
@@ -24,7 +24,7 @@ inline fun <reified T> toTypeOf(
     return adapter.fromJson(json)!!
 }
 
-inline fun <reified T> toType(
+inline fun <reified T> toTypeOf(
     rawType: Class<*>,
     typeArgument: Class<*>? = null,
     json: String? = null
