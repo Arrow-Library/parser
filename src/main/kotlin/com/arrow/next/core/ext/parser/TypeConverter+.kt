@@ -1,12 +1,15 @@
 package com.arrow.next.core.ext.parser
 
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import org.koin.core.context.GlobalContext
 import org.koin.core.qualifier.named
+import java.io.FileReader
 
 
 val gson = GlobalContext.get().get(named("bgson")) as Gson
@@ -70,6 +73,25 @@ inline fun <reified T > JsonTo(
 ): T {
     return gson.fromJson(json, T::class.java)
 }
+
+inline fun <reified T > JsonTo(
+    file: FileReader
+): T {
+    return gson.fromJson(file, T::class.java)
+}
+
+inline fun <reified T > JsonTo(
+    reader: JsonReader
+): T {
+    return gson.fromJson(reader, T::class.java)
+}
+
+inline fun <reified T > JsonTo(
+    element: JsonElement
+): T {
+    return gson.fromJson(element, T::class.java)
+}
+
 inline fun <reified T> JsonOf(
     clazz: T
 ): String {
