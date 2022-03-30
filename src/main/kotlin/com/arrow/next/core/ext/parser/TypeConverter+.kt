@@ -117,7 +117,7 @@ private var pairLang :  PairLang = null
 private fun language(): PairLang {
     return if (pairLang == null) {
         val fileReader = FileReader(file)
-        val pairLang  = JsonTo<PairLang>(file = fileReader)
+        pairLang  = JsonTo(file = fileReader)
         pairLang
     } else {
         pairLang
