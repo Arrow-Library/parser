@@ -2,18 +2,21 @@ package com.arrow.next.core.ext.parser
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.google.gson.internal.LinkedTreeMap
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import org.koin.core.context.GlobalContext
 import org.koin.core.qualifier.named
+import org.koin.core.context.GlobalContext.get
+import java.io.File
 import java.io.FileReader
 
 
-val gson = GlobalContext.get().get(named("bgson")) as Gson
-var moshi = GlobalContext.get().get(named("bmoshi")) as Moshi
+typealias  PairLang = HashMap<String, LinkedTreeMap<String, String>>?
+val gson = get().get(named("bgson")) as Gson
+var moshi = get().get(named("bmoshi")) as Moshi
 
 inline fun <reified T> toType(
     rawType: Class<*>,
@@ -103,4 +106,24 @@ inline fun <reified T> toListOfType(
 ): List<T> {
     val typeToken = object : TypeToken<List<T>>() {}.type
     return gson.fromJson(json, typeToken)
+}
+
+
+@Deprecated("Will change stream reader")
+private val file = get().get(named("file")) as File
+private var pairLang :  PairLang = null
+
+
+private fun language(): PairLang {
+    return if (pairLang == null) {
+        val fileReader = FileReader(file)
+        val pairLang  = JsonTo<PairLang>(file = fileReader)
+        pairLang
+    } else {
+        pairLang
+    }
+}
+
+fun translate(key: String, next: String): String {
+    return language()!![key]?.get(next)!!
 }
