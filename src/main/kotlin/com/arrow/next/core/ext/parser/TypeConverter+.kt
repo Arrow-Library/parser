@@ -114,8 +114,8 @@ private val file = get().get(named("file")) as File
 private var pairLang :  PairLang = null
 
 
-private fun language(): PairLang {
-    return if (pairLang == null) {
+private fun language(reload: Boolean): PairLang {
+    return if (pairLang == null || !reload) {
         val fileReader = FileReader(file)
         pairLang  = JsonTo(file = fileReader)
         pairLang
@@ -124,6 +124,6 @@ private fun language(): PairLang {
     }
 }
 
-fun translate(key: String, next: String): String {
-    return language()!![key]?.get(next)!!
+fun translate(key: String, next: String, reload: Boolean = false): String {
+    return language(reload)!![key]?.get(next)!!
 }
