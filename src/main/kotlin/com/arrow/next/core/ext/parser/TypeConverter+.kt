@@ -11,6 +11,7 @@ import com.squareup.moshi.Types
 import org.koin.core.qualifier.named
 import org.koin.core.context.GlobalContext.get
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileReader
 
 
@@ -115,13 +116,19 @@ private var pairLang :  PairLang = null
 
 
 fun language(reload: Boolean = false): PairLang {
-    return if (pairLang == null || reload) {
-        val fileReader = FileReader(file)
-        pairLang  = JsonTo(file = fileReader)
-        fileReader.close()
-        pairLang
+    return if (pairLang == null || reload) ({
+        lateinit var fileReader: FileReader
+        try {
+             fileReader = FileReader(file)
+            pairLang  = JsonTo(file = fileReader)
+            pairLang
+        } catch (e: FileNotFoundException) {
 
-    } else {
+        } finally {
+            fileReader.close()
+        }
+
+    }) as PairLang else {
         pairLang
     }
 }
