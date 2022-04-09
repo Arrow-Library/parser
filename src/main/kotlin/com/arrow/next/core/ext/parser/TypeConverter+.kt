@@ -112,27 +112,32 @@ inline fun <reified T> toListOfType(
 
 @Deprecated("Will change stream reader")
 private val file = get().get(named("file")) as File
-private var pairLang :  PairLang = null
+
+private var _pairLang : PairLang? = null
+val pairLang: PairLang
+    get() {
+        if(_pairLang == null) {
+            lateinit var fileReader: FileReader
+            try {
+                fileReader = FileReader(file)
+                _pairLang  = JsonTo(file = fileReader)
+            } finally {
+                fileReader.close()
+            }
+        }
+        return _pairLang
+    }
 
 
 fun language(reload: Boolean = false): PairLang {
-    return if (pairLang == null || reload) ({
-        lateinit var fileReader: FileReader
-        try {
-             fileReader = FileReader(file)
-            pairLang  = JsonTo(file = fileReader)
-            pairLang
-        } catch (e: FileNotFoundException) {
-
-        } finally {
-            fileReader.close()
-        }
-
-    }) as PairLang else {
+    return if (reload) {
+        _pairLang = null
+        pairLang
+    } else {
         pairLang
     }
 }
 
 fun translate(key: String, next: String): String {
-    return language()!![key]?.get(next)!!
+    return pairLang!![key]?.get(next)!!
 }
