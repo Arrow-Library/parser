@@ -118,7 +118,9 @@ fun language(reload: Boolean = false): PairLang {
     return if (pairLang == null || reload) {
         val fileReader = FileReader(file)
         pairLang  = JsonTo(file = fileReader)
+        fileReader.close()
         pairLang
+
     } else {
         pairLang
     }
